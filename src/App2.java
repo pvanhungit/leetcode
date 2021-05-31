@@ -14,47 +14,35 @@ public class App2 {
     }
 
     public int findNumberOfLIS(int[] nums) {
-        int maxLen = 1;
-
+        int maxLen = 0, rs = 0;
         int[] lens = new int[nums.length];
-        int[] times = new int[nums.length];
+        int[] cnt = new int[nums.length];
 
-        for (int i = 0; i < nums.length; i++) {
-
-            // init
-            lens[i] = 1;
-
-            // find max len of i
+        for(int i = 0 ; i < nums.length; i++) {
             int value = nums[i];
-            for (int k = i - 1; k >= 0; k--) {
-                int valueK = nums[k];
-                if (valueK < value && (lens[i] < lens[k] + 1)) {
-                    lens[i] = lens[k] + 1;
+
+            lens[i]++;
+            cnt[i]++;
+            for(int k = 0; k < i; k++) {
+                int valueK = nums[k], lenK = lens[k];
+                if(valueK < value ) {
+                    if (lens[i] == lens[k] + 1 ) {
+                        cnt[i] += cnt[k];
+                    } else if(lens[i] <= lenK) {
+                        lens[i] = lenK + 1;
+                        cnt[i] = cnt[k];
+                    }                   
                 }
             }
 
-            // update number of local Max Len
-            int maxLocalLen = lens[i];
-            for (int k = i - 1; k >= 0; k--) {
-                int valueK = nums[k];
-                if (valueK < value && (maxLocalLen == lens[k] + 1) ) {
-                    times[i] += times[k];
-                }
+            if(maxLen < lens[i]) {
+                maxLen = lens[i];
+                rs = cnt[i];
+            } else if (maxLen == lens[i]) {
+                rs += cnt[i];
             }
-            if(times[i] == 0) {
-                times[i] = 1;
-            }
+        }
 
-            if (maxLocalLen > maxLen) {
-                maxLen = maxLocalLen;
-            }
-        }
-        int rs = 0;
-        for(int i = 0; i< nums.length; i++) {
-            if(lens[i] == maxLen) {
-                rs += times[i];
-            }
-        }
         return rs;
     }
 }
